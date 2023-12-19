@@ -5,8 +5,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import ru.shop.backend.search.model.ItemElastic;
-import ru.shop.backend.search.repository.ItemDbRepository;
-import ru.shop.backend.search.repository.ItemRepository;
+import ru.shop.backend.search.repository.ItemSkuRepository;
+import ru.shop.backend.search.repository.ItemElasticRepository;
 
 import javax.transaction.Transactional;
 
@@ -14,19 +14,18 @@ import javax.transaction.Transactional;
 @RequiredArgsConstructor
 @Slf4j
 public class ReindexSearchService {
-    private final ItemDbRepository dbRepository;
-    private final ItemRepository searchRepository;
+    private final ItemSkuRepository dbRepository;
+    private final ItemElasticRepository searchRepository;
+
     @Scheduled(fixedDelay = 43200000)
     @Transactional
-    public void reindex(){
+    public void reindex() {
         log.info("генерация индексов по товарам запущена");
-        dbRepository.findAllInStream().parallel()
-                .map(entity -> new ItemElastic(entity))
-                .forEach(
-                item ->
-                searchRepository.save(item)
-        );
-        log.info("генерация индексов по товарам закончилась");
 
+        dbRepository.findAll().stream().parallel()
+                .map(ItemElastic::new)
+                .forEach(searchRepository::save);
+
+        log.info("генерация индексов по товарам закончилась");
     }
 }

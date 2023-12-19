@@ -1,4 +1,4 @@
-package ru.shop.backend.search.model;
+package ru.shop.backend.search.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -11,5 +11,4 @@ public class Category {
     private String url;
     private String parentUrl;
     private String image;
-
 }
